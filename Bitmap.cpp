@@ -1,41 +1,58 @@
-#include <cstdint> 
+#include <cstdint>
 #include <fstream>
 #include <vector>
 #include "BmpHeaders.h"
 #include "Bitmap.h"
 
-Bitmap::Bitmap(int width, int height) {
-    width_ = width;
-    height_ = height;
-}
-
 void Bitmap::drawBitmap(std::vector<std::vector<int>> set) {
+    int width_ = set[0].size();
+    int height_ = set.size();
+
     int rowStride = (width_ * 3 + 3) & ~3;
 
-    std::vector<uint8_t> pixelData(rowStride * height_);
-    for (int i = 0; i < height_; i++) {
-        for (int j = 0; j < width_; j++) {
-            // Blue
-            pixelData[i * rowStride + j * 3 + 0] = 0;
-            // Green
-            pixelData[i * rowStride + j * 3 + 1] = 0;
-            // Red
-            pixelData[i * rowStride + j * 3 + 2] = (j % 256);
+    int maxPointValue = 0;
+
+    for (const auto& row : set) {
+        for (auto point : row) {
+            maxPointValue = point > maxPointValue ? point : maxPointValue;
         }
     }
 
+    std::vector<uint8_t> pixelData(rowStride * height_);
+    for (int i = 0; i < width_; i++) {
+        for (int j = 0; j < height_; j++) {
+            int point = set[i][j];
+
+            uint8_t b, g, r = 0;
+
+            if (point != -1) {
+                double t = static_cast<double>(point) / maxPointValue;
+                r = static_cast<uint8_t>(12 * (1 - t) * t * t * t * 255);
+                g = static_cast<uint8_t>(21 * (1 - t) * (1 - t) * t * t * 255);
+                b = static_cast<uint8_t>(8.5 * (1 - t) * (1 - t) * (1 - t) * t * 255);
+            }
+
+            // Blue
+            pixelData[i * rowStride + j * 3 + 0] = b;
+            // Green
+            pixelData[i * rowStride + j * 3 + 1] = g;
+            // Red
+            pixelData[i * rowStride + j * 3 + 2] = r;
+        }
+    }
+
+    int pixelDataSize = pixelData.size();
     BITMAPFILEHEADER fileHeader;
     BITMAPINFOHEADER infoHeader;
     infoHeader.width = width_;
     infoHeader.height = height_;
-    infoHeader.rawBitmapDataSize = pixelData.size();
-    fileHeader.fileSize = fileHeader.offsetData + pixelData.size();
+    infoHeader.rawBitmapDataSize = pixelDataSize;
+    fileHeader.fileSize = fileHeader.offsetData + pixelDataSize;
 
     std::ofstream fout("image.bmp", std::ios::binary);
-
     fout.write(reinterpret_cast<const char *>(&fileHeader), sizeof(fileHeader));
     fout.write(reinterpret_cast<const char *>(&infoHeader), sizeof(infoHeader));
-    fout.write(reinterpret_cast<const char *>(pixelData.data()), pixelData.size());
+    fout.write(reinterpret_cast<const char *>(pixelData.data()), pixelDataSize);
 
     fout.close();
 }
