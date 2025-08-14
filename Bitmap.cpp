@@ -27,8 +27,8 @@ void Bitmap::drawBitmap(std::vector<std::vector<int>> set) {
 
             if (point != -1) {
                 double t = static_cast<double>(point) / maxPointValue;
-                r = static_cast<uint8_t>(12 * (1 - t) * t * t * t * 255);
-                g = static_cast<uint8_t>(21 * (1 - t) * (1 - t) * t * t * 255);
+                r = static_cast<uint8_t>(9 * (1 - t) * t * t * t * 255);
+                g = static_cast<uint8_t>(15 * (1 - t) * (1 - t) * t * t * 255);
                 b = static_cast<uint8_t>(8.5 * (1 - t) * (1 - t) * (1 - t) * t * 255);
             }
 
