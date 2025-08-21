@@ -5,11 +5,9 @@
 #include "Bitmap.h"
 
 void Bitmap::drawBitmap(std::vector<std::vector<int>> set) {
-    int width_ = set[0].size();
-    int height_ = set.size();
-
-    int rowStride = (width_ * 3 + 3) & ~3;
-
+    int width = set[0].size();
+    int height = set.size();
+    int rowStride = (width * 3 + 3) & ~3;
     int maxPointValue = 0;
 
     for (const auto& row : set) {
@@ -18,9 +16,9 @@ void Bitmap::drawBitmap(std::vector<std::vector<int>> set) {
         }
     }
 
-    std::vector<uint8_t> pixelData(rowStride * height_);
-    for (int i = 0; i < width_; i++) {
-        for (int j = 0; j < height_; j++) {
+    std::vector<uint8_t> pixelData(rowStride * height);
+    for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
             int point = set[i][j];
 
             uint8_t b, g, r = 0;
@@ -41,11 +39,15 @@ void Bitmap::drawBitmap(std::vector<std::vector<int>> set) {
         }
     }
 
+    writeToFile(width, height, pixelData);
+}
+
+void Bitmap::writeToFile(int width, int height, std::vector<uint8_t> pixelData) {
     int pixelDataSize = pixelData.size();
     BITMAPFILEHEADER fileHeader;
     BITMAPINFOHEADER infoHeader;
-    infoHeader.width = width_;
-    infoHeader.height = height_;
+    infoHeader.width = width;
+    infoHeader.height = height;
     infoHeader.rawBitmapDataSize = pixelDataSize;
     fileHeader.fileSize = fileHeader.offsetData + pixelDataSize;
 
@@ -53,6 +55,5 @@ void Bitmap::drawBitmap(std::vector<std::vector<int>> set) {
     fout.write(reinterpret_cast<const char *>(&fileHeader), sizeof(fileHeader));
     fout.write(reinterpret_cast<const char *>(&infoHeader), sizeof(infoHeader));
     fout.write(reinterpret_cast<const char *>(pixelData.data()), pixelDataSize);
-
     fout.close();
 }
