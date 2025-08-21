@@ -12,10 +12,10 @@ const std::complex<double> c(-0.70176, -0.3842);
 
 std::complex<double> f(std::complex<double> z);
 
-std::vector<std::vector<int>> getNumberOfIterations();
+std::vector<std::vector<int>> getNumberOfIterationsPerPixel();
 
 int main() {
-    Bitmap::drawBitmap(getNumberOfIterations());
+    Bitmap::drawBitmap(getNumberOfIterationsPerPixel());
 
     return 0;
 }
@@ -27,7 +27,7 @@ std::complex<double> f(std::complex<double> z) {
 /**
  * @TODO add parallel computation
  */
-std::vector<std::vector<int>> getNumberOfIterations() {
+std::vector<std::vector<int>> getNumberOfIterationsPerPixel() {
     std::vector<std::vector<int>> iterationCount;
 
     double x = START_VALUE;
