@@ -36,18 +36,18 @@ std::vector<std::vector<int>> getNumberOfIterationsPerPixel() {
         double y = START_VALUE;
         while (y <= STOP_VALUE) {
             std::complex<double> point(x, y);
-            bool valueFind = false;
+            bool valueFound = false;
             int numOfIterations = NUM_OF_ITERATIONS;
             while(numOfIterations > 0) {
                 point = f(point);
                 if (abs(point) > 2) {
-                    valueFind = true;
+                    valueFound = true;
                     iterRow.push_back(NUM_OF_ITERATIONS - numOfIterations);
                     break;
                 }
                 --numOfIterations;
             }
-            if (!valueFind) {
+            if (!valueFound) {
                 iterRow.push_back(-1);
             }
             y += ITERATION_STEP;
